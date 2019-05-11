@@ -2,34 +2,30 @@
 using Rocket.Core.Plugins;
 using SDG.Unturned;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Threading.Tasks;
+using Rocket.API.Player;
+using Rocket.Core.Logging;
 using UnityEngine;
 using Rocket.Unturned.Player;
-using Rocket.API.Collections;
-using Rocket.Unturned.Chat;
-using Logger = Rocket.Core.Logging.Logger;
 
 namespace DoorPlugin
 {
-    public class DoorPlugin : RocketPlugin<Config>
+    public class DoorPlugin : Plugin<Config>
     {
-        public static DoorPlugin Instance;
         #region Loading/Unloading
-        protected override void Load()
+        protected override async Task OnActivate()
         {
-            base.Load();
-            Instance = this;
-            Logger.Log("DoorPlugin Loaded ❤️ Joosep & Fixed by educatalan02", System.ConsoleColor.Blue);
+            
+            Logger.LogInformation("DoorPlugin Loaded ❤️ Joosep & Fixed by educatalan02", System.ConsoleColor.Blue);
             Logger.Log("Version: " + Assembly.GetName().Version);
-            Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerUpdateGesture += UnturnedPlayerEvents_OnPlayerUpdateGesture; 
         }
-        protected override void Unload()
+        protected override async Task OnDeactivate()
         {
-            base.Unload();
             Instance = null;
-            Rocket.Core.Logging.Logger.Log("DoorPlugin Unloaded ❤️ Joosep", System.ConsoleColor.Blue);
-            Rocket.Unturned.Events.UnturnedPlayerEvents.OnPlayerUpdateGesture -= UnturnedPlayerEvents_OnPlayerUpdateGesture;
-            
-            
+            Logger.LogInformation("DoorPlugin Unloaded ❤️ Joosep", System.ConsoleColor.Blue);
+
+
         }
         public override TranslationList DefaultTranslations => new TranslationList
         {
@@ -58,7 +54,7 @@ namespace DoorPlugin
             }
         }
         //Opens The Bloody Door
-        public void Execute(IRocketPlayer caller)
+        public void Execute(IPlayer caller)
         {
             var RaycastPos = Raycast(caller).parent.parent.position;
             var Exsists = Instance.Configuration.Instance.conf.Exists(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == RaycastPos);
@@ -77,7 +73,7 @@ namespace DoorPlugin
         }
 
         //Checks If The Player Has One Of The Required Permissions
-        public static bool CheckPermissions(IRocketPlayer caller, List<string> perms)
+        public static bool CheckPermissions(IPlayer caller, List<string> perms)
         {
             if (perms.Count > 0)
             {
@@ -95,7 +91,7 @@ namespace DoorPlugin
             return false;
         }
 
-        public void DeleteData(Transform transform, string[] permissions, IRocketPlayer rocketPlayer)
+        public void DeleteData(Transform transform, string[] permissions, IPlayer rocketPlayer)
         {
             var i = Instance.Configuration.Instance.conf.Find(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == Raycast(rocketPlayer).parent.parent.position);
             if(i != null)
@@ -157,7 +153,7 @@ namespace DoorPlugin
             }
         }
         #endregion
-        public static Transform Raycast(IRocketPlayer rocketPlayer)
+        public static Transform Raycast(IPlayer rocketPlayer)
         {
             RaycastHit hit;
             UnturnedPlayer player = (UnturnedPlayer)rocketPlayer;

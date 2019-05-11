@@ -1,11 +1,12 @@
-﻿using Rocket.API;
-using Rocket.Unturned.Chat;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rocket.API.Player;
+using Rocket.Core.I18N;
 using UnityEngine;
 
 namespace DoorPlugin
 {
-    public class Config : IRocketPluginConfiguration
+    public class Config
     {
         //Config
         public int OpenDistance { get; set; }
@@ -13,7 +14,7 @@ namespace DoorPlugin
         public List<Data> conf = new List<Data>();
         
 
-        public void SaveData(Transform transform, string[] permissions, IRocketPlayer caller)
+        public async Task SaveData(Transform transform, string[] permissions, IPlayer caller)
         {
             var find = conf.Find(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == transform.position);
             if (find == null)
@@ -23,17 +24,17 @@ namespace DoorPlugin
             }
             else
             {
-               UnturnedChat.Say(caller,DoorPlugin.Instance.Translations.Instance.Translate("AExsists"),Color.red);
+               caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("AExsists"),Color.red);
             }
         }
-        public void SaveDataForEdit(Transform transform, string[] permissions, IRocketPlayer caller)
+        public async Task SaveDataForEdit(Transform transform, string[] permissions, IPlayer caller)
         {
           conf.Add(new Data { Permissions = new List<string>(permissions), transform = transform.position });
           DoorPlugin.Instance.Configuration.Save();  
         }
 
 
-        public void LoadDefaults()
+        public async Task LoadDefaults()
         {
             OpenDistance = 2;
             OpenOnHit = true;

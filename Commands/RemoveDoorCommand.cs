@@ -1,13 +1,14 @@
-﻿using Rocket.API;
-using Rocket.Unturned.Chat;
-using SDG.Unturned;
+﻿using SDG.Unturned;
 using System.Collections.Generic;
+using Rocket.API.Commands;
+using Rocket.API.Player;
+using Rocket.Core.I18N;
 
 namespace DoorPlugin
 {
-    public class RemoveDoorCommand : IRocketCommand
+    public class RemoveDoorCommand : Command
     {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+        
 
         public string Name => "RemoveDoor";
 
@@ -19,7 +20,7 @@ namespace DoorPlugin
 
         public List<string> Permissions => new List<string> { "D.Removedoor" };
 
-        public void Execute(IRocketPlayer caller, string[] command)
+        public void ExecuteAsync(IPlayer caller, ICommandContext commandContext)
         {
             var raycast = DoorPlugin.Raycast(caller);
             if(raycast != null)
@@ -27,11 +28,11 @@ namespace DoorPlugin
                 if (raycast.GetComponent<InteractableDoorHinge>() != null)
                 {
                     DoorPlugin.Instance.DeleteData(raycast.parent.parent, command, caller);
-                    UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("DoorRemoved"));
+                    caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("DoorRemoved"));
                 }
                 else
                 {
-                    UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
+                    caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
                 }
 
             }  

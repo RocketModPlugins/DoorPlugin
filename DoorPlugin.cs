@@ -1,10 +1,12 @@
-﻿using Rocket.API;
-using Rocket.Core.Plugins;
+﻿using Rocket.Core.Plugins;
 using SDG.Unturned;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Threading.Tasks;
+using Rocket.API.DependencyInjection;
+using Rocket.API.Permissions;
 using Rocket.API.Player;
+using Rocket.Core.I18N;
 using Rocket.Core.Logging;
 using UnityEngine;
 using Rocket.Unturned.Player;
@@ -13,8 +15,16 @@ namespace DoorPlugin
 {
     public class DoorPlugin : Plugin<Config>
     {
+        private IPermissionProvider _permissionProvider;
+
+        public DoorPlugin(IDependencyContainer dependencyContainer, IPermissionProvider _permissionProvider) : base("Door Plugin", dependencyContainer)
+        {
+            this._permissionProvider = _permissionProvider;
+        }
+        
+        
         #region Loading/Unloading
-        protected override async Task OnActivate()
+        protected override async Task OnActivate(bool isFromReload)
         {
             
             Logger.LogInformation("DoorPlugin Loaded ❤️ Joosep & Fixed by educatalan02", System.ConsoleColor.Blue);
@@ -22,10 +32,8 @@ namespace DoorPlugin
         }
         protected override async Task OnDeactivate()
         {
-            Instance = null;
             Logger.LogInformation("DoorPlugin Unloaded ❤️ Joosep", System.ConsoleColor.Blue);
-
-
+            
         }
         public override TranslationList DefaultTranslations => new TranslationList
         {
@@ -40,21 +48,21 @@ namespace DoorPlugin
         };
         #endregion
 
-        private void UnturnedPlayerEvents_OnPlayerUpdateGesture(UnturnedPlayer player, Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture gesture)
+        private async Task UnturnedPlayerEvents_OnPlayerUpdateGesture(UnturnedPlayer player, Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture gesture)
         {
-            Transform raycast = Raycast(player);
+            Transform raycast = await Raycast(player);
 
             if (gesture.Equals(Rocket.Unturned.Events.UnturnedPlayerEvents.PlayerGesture.PunchLeft) && raycast != null && Instance.Configuration.Instance.OpenOnHit == true
              )
             {
                 if(Raycast(player).GetComponent<InteractableDoorHinge>() != null)
                 {
-                    Execute(player);
+                    ExecuteAsync(player);
                 }    
             }
         }
         //Opens The Bloody Door
-        public void Execute(IPlayer caller)
+        public async Task ExecuteAsync(IPlayer caller)
         {
             var RaycastPos = Raycast(caller).parent.parent.position;
             var Exsists = Instance.Configuration.Instance.conf.Exists(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == RaycastPos);
@@ -67,19 +75,19 @@ namespace DoorPlugin
                 }
                 else
                 {
-                    UnturnedChat.Say(caller, Instance.Translations.Instance.Translate("NoPerms"));
+                    caller.User.SendLocalizedMessageAsync(caller, Instance.Translations.Instance.Translate("NoPerms"));
                 }
             }
         }
 
         //Checks If The Player Has One Of The Required Permissions
-        public static bool CheckPermissions(IPlayer caller, List<string> perms)
+        public async Task <bool> CheckPermissions(IPlayer caller, List<string> perms, IPermissionProvider _permissionProvider)
         {
             if (perms.Count > 0)
             {
                 foreach (var i in perms)
                 {
-                    foreach (var t in caller.GetPermissions())
+                    foreach (var t in await _permissionProvider.GetGrantedPermissionsAsync(caller.User))
                     {
                         if (t.Name == i)
                         {
@@ -91,7 +99,7 @@ namespace DoorPlugin
             return false;
         }
 
-        public void DeleteData(Transform transform, string[] permissions, IPlayer rocketPlayer)
+        public async Task DeleteData(Transform transform, string[] permissions, IPlayer rocketPlayer)
         {
             var i = Instance.Configuration.Instance.conf.Find(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == Raycast(rocketPlayer).parent.parent.position);
             if(i != null)
@@ -100,24 +108,17 @@ namespace DoorPlugin
                 Instance.Configuration.Save();
             } else
             {
-                UnturnedChat.Say(rocketPlayer, Instance.Translations.Instance.Translate("NoExists"));
+                rocketPlayer.User.SendLocalizedMessageAsync(Instance.Translations.Instance.Translate("NoExists"));
             }
             
         }
 
-        public static bool ShouldOpen(Transform transform)
+        public static async Task<bool> ShouldOpen(Transform transform)
         {
             if (transform.GetComponent<InteractableDoorHinge>() != null)
             {
                 transform = transform.parent.parent;
-                if (transform.GetComponent<InteractableDoor>().isOpen)
-                {
-                    return false;
-                }
-                else
-                {
-                    return true;
-                }
+                return !transform.GetComponent<InteractableDoor>().isOpen;
             }
             return true;
         }
@@ -153,7 +154,7 @@ namespace DoorPlugin
             }
         }
         #endregion
-        public static Transform Raycast(IPlayer rocketPlayer)
+        public static async Task<Transform> Raycast(IPlayer rocketPlayer)
         {
             RaycastHit hit;
             UnturnedPlayer player = (UnturnedPlayer)rocketPlayer;

@@ -1,14 +1,15 @@
-﻿using Rocket.API;
-using Rocket.Unturned.Chat;
-using SDG.Unturned;
+﻿using SDG.Unturned;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rocket.API.Commands;
+using Rocket.API.Player;
+using Rocket.Core.I18N;
 
 namespace DoorPlugin
 {
-    public class Door : IRocketCommand
+    public class DoorCommand : ICommand
     {
-        public static Rocket.Unturned.Permissions.UnturnedPermissions UPerms;
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+        
 
         public string Name => "Door";
 
@@ -16,11 +17,11 @@ namespace DoorPlugin
 
         public string Syntax => "";
 
-        public List<string> Aliases => new List<string> { "D", "door", "d" };
+        public string[] Aliases => new string[]  {"D", "door", "d"};
 
         public List<string> Permissions => new List<string> { "D.Door" };
 
-        public void Execute(IRocketPlayer caller, string[] command)
+        public async Task ExecuteAsync(IPlayer caller, string[] command)
         {
             var raycast = DoorPlugin.Raycast(caller);
             if(raycast != null)
@@ -31,7 +32,7 @@ namespace DoorPlugin
                 }
                 else
                 {
-                    UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
+                    caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
                 }
 
             }    

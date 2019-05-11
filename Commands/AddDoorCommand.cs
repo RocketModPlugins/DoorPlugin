@@ -1,25 +1,34 @@
-﻿using Rocket.API;
-using Rocket.Unturned.Chat;
+﻿using System;
+using Rocket.API;
 using SDG.Unturned;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Rocket.API.Commands;
+using Rocket.API.Player;
+using Rocket.API.User;
+using Rocket.Core.I18N;
 
-namespace DoorPlugin
+namespace DoorPlugin 
 {
-    public class AddDoorCommand : IRocketCommand
-    {
-        public AllowedCaller AllowedCaller => AllowedCaller.Player;
+    public class AddDoorCommand : ICommand {
+        
 
         public string Name => "AddDoor";
+        
 
-        public string Help => "/AddDoor [Perms]";
+        public string Syntax => "/adddoor [perms]";
 
-        public string Syntax => "";
+        public string[] Aliases => new string[] { "adddoor", "AD" };
 
-        public List<string> Aliases => new List<string> { "adddoor", "AD" };
+        public string Summary => "Adds a door";
 
         public List<string> Permissions => new List<string> { "D.Adddoor" };
 
-        public void Execute(IRocketPlayer caller, string[] command)
+        public bool SupportsUser(IUser user) => true;
+
+        public IChildCommand[] ChildCommands => null;
+
+        public async Task ExecuteAsync(ICommandContext command, IPlayer caller)
         {
             var raycast = DoorPlugin.Raycast(caller);
             if(raycast != null)
@@ -32,11 +41,11 @@ namespace DoorPlugin
                     {
                         Permissions += item + ", ";
                     }
-                    UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("DoorAdded") + Permissions);
+                    caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("DoorAdded") + Permissions);
                 }
                 else
                 {
-                    UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
+                    caller.User.SendLocalizedMessageAsync(DoorPlugin.Instance.Translations.Instance.Translate("NoDoor"), UnityEngine.Color.red);
                 }
 
             }   

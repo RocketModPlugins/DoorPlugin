@@ -26,7 +26,7 @@ namespace DoorPlugin
                UnturnedChat.Say(caller,DoorPlugin.Instance.Translations.Instance.Translate("AExsists"),Color.red);
             }
         }
-        public void SaveDataForEdit(Transform transform, string[] permissions, IRocketPlayer caller)
+        public void SaveDataForEdit(Transform transform, string[] permissions, IRocketPlayer _)
         {
           conf.Add(new Data { Permissions = new List<string>(permissions), transform = transform.position });
           DoorPlugin.Instance.Configuration.Save();  

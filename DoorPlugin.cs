@@ -95,7 +95,7 @@ namespace DoorPlugin
             return false;
         }
 
-        public void DeleteData(Transform transform, string[] permissions, IRocketPlayer rocketPlayer)
+        public void DeleteData(IRocketPlayer rocketPlayer)
         {
             var i = Instance.Configuration.Instance.conf.Find(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == Raycast(rocketPlayer).parent.parent.position);
             if(i != null)
@@ -128,14 +128,9 @@ namespace DoorPlugin
         #region DoorPackets
         public static void OpenDoor(Transform transform, bool ShouldOpen)
         {
-            byte x;
-            byte y;
-            BarricadeRegion r;
-            ushort index;
-            ushort plant;
-            
 
-            if (BarricadeManager.tryGetInfo(transform, out x, out y,out plant, out index, out r))
+
+            if (BarricadeManager.tryGetInfo(transform, out byte x, out byte y, out ushort plant, out ushort index, out _))
             {
 
                 BarricadeManager.instance.channel.send("askToggleDoor", ESteamCall.ALL, ESteamPacket.UPDATE_UNRELIABLE_BUFFER, new object[] {
@@ -159,9 +154,8 @@ namespace DoorPlugin
         #endregion
         public static Transform Raycast(IRocketPlayer rocketPlayer)
         {
-            RaycastHit hit;
             UnturnedPlayer player = (UnturnedPlayer)rocketPlayer;
-            if (Physics.Raycast(player.Player.look.aim.position, player.Player.look.aim.forward, out hit, DoorPlugin.Instance.Configuration.Instance.OpenDistance, RayMasks.BARRICADE_INTERACT))
+            if (Physics.Raycast(player.Player.look.aim.position, player.Player.look.aim.forward, out RaycastHit hit, DoorPlugin.Instance.Configuration.Instance.OpenDistance, RayMasks.BARRICADE_INTERACT))
             {
                 Transform transform = hit.transform;
 

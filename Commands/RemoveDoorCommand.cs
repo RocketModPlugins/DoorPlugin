@@ -26,7 +26,7 @@ namespace DoorPlugin
             {
                 if (raycast.GetComponent<InteractableDoorHinge>() != null)
                 {
-                    DoorPlugin.Instance.DeleteData(raycast.parent.parent, command, caller);
+                    DoorPlugin.Instance.DeleteData(caller);
                     UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("DoorRemoved"));
                 }
                 else

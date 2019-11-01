@@ -28,7 +28,7 @@ namespace DoorPlugin
             var Exsists = DoorPlugin.Instance.Configuration.Instance.conf.Find(c => new Vector3 { x = c.transform.x, y = c.transform.y, z = c.transform.z } == transform.parent.parent.position);
             if (Exsists != null)
             {
-                DoorPlugin.Instance.DeleteData(transform.parent.parent, Perms, caller);
+                DoorPlugin.Instance.DeleteData(caller);
                 DoorPlugin.Instance.Configuration.Instance.SaveDataForEdit(transform.parent.parent, Perms, caller);
                 UnturnedChat.Say(caller, DoorPlugin.Instance.Translations.Instance.Translate("DoorEdited"));
             } else

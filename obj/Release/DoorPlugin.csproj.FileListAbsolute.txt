@@ -21,3 +21,9 @@ C:\Users\Justin Biber\source\repos\DoorPlugin\DoorPlugin\obj\Release\DoorPlugin.
 C:\Users\Justin Biber\source\repos\DoorPlugin\DoorPlugin\obj\Release\DoorPlugin.csproj.CopyComplete
 C:\Users\Justin Biber\source\repos\DoorPlugin\DoorPlugin\obj\Release\DoorPlugin.dll
 C:\Users\Justin Biber\source\repos\DoorPlugin\DoorPlugin\obj\Release\DoorPlugin.pdb
+C:\Users\irfan\Documents\GitHub\DoorPlugin\obj\Release\DoorPlugin.csprojAssemblyReference.cache
+C:\Users\irfan\Documents\GitHub\DoorPlugin\obj\Release\DoorPlugin.csproj.CoreCompileInputs.cache
+C:\Users\irfan\Documents\GitHub\DoorPlugin\obj\Release\DoorPlugin.dll
+C:\Users\irfan\Documents\GitHub\DoorPlugin\obj\Release\DoorPlugin.pdb
+C:\Users\irfan\Documents\GitHub\DoorPlugin\bin\Release\DoorPlugin.dll
+C:\Users\irfan\Documents\GitHub\DoorPlugin\bin\Release\DoorPlugin.pdb

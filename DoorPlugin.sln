@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2047
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28729.10
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DoorPlugin", "DoorPlugin.csproj", "{7DD49A0F-F4D3-4810-8B39-F292B2D33D36}"
 EndProject
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {0AE66D6A-C9A9-46D9-B450-44288EFC4E7B}
+		SolutionGuid = {2B53FD9D-CBF7-4163-AE3A-F6C2299D1F98}
 	EndGlobalSection
 EndGlobal
